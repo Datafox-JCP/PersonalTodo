@@ -1,10 +1,12 @@
 package mx.datafox.personaltodo.data.repositories
 
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import mx.datafox.personaltodo.data.TodoDao
 import mx.datafox.personaltodo.data.models.TodoTask
 import javax.inject.Inject
 
+@ViewModelScoped
 class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
 
     val getAllTasks: Flow<List<TodoTask>> = todoDao.getAllTasks()
