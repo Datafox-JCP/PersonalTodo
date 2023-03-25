@@ -1,4 +1,4 @@
-package mx.datafox.personaltodo.ui.view
+package mx.datafox.personaltodo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
