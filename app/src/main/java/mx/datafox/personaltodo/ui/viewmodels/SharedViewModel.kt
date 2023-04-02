@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import mx.datafox.personaltodo.data.models.TodoTask
 import mx.datafox.personaltodo.data.repositories.TodoRepository
+import mx.datafox.personaltodo.util.RequestState
 import mx.datafox.personaltodo.util.SearchAppBarState
 import javax.inject.Inject
 
@@ -21,14 +22,19 @@ class SharedViewModel @Inject constructor(
     val searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
     val searchTextState: MutableState<String> = mutableStateOf("")
 
-    private val _allTasks = MutableStateFlow<List<TodoTask>>(emptyList())
-    val allTasks: StateFlow<List<TodoTask>> = _allTasks
+    private val _allTasks = MutableStateFlow<RequestState<List<TodoTask>>>(RequestState.Idle)
+    val allTasks: StateFlow<RequestState<List<TodoTask>>> = _allTasks
 
     fun getAllTasks() {
-        viewModelScope.launch {
-            repository.getAllTasks.collect {
-                _allTasks.value = it
+        _allTasks.value = RequestState.Loading
+        try {
+            viewModelScope.launch {
+                repository.getAllTasks.collect {
+                    _allTasks.value = RequestState.Success(it)
+                }
             }
+        } catch (e: Exception) {
+            _allTasks.value = RequestState.Error(e)
         }
     }
 }

@@ -8,3 +8,7 @@ val SMALL_PADDING = 6.dp
 
 val PRIORITY_INDICATOR_SIZE = 16.dp
 val TOP_APP_BAR_HEIGHT = 56.dp // Material Guidelines
+
+val TASK_ITEM_ELEVATION = 2.dp
+
+val BIG_ICON_SIZE = 120.dp

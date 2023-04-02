@@ -4,4 +4,11 @@
     <string name="search_tasks">Search Tasks</string>
     <string name="sort_tasks">Sort Tasks</string>
     <string name="delete_all">Delete All</string>
+    <string name="tasks">Tasks</string>
+    <string name="search">Search</string>
+    <string name="search_icon">Search icon</string>
+    <string name="close_icon">Close icon</string>
+    <string name="smile_face_icon">Smile face icon</string>
+    <string name="no_pending_tasks">Congrats! No pending tasks.</string>
+    <string name="back_arrow">Back arrow</string>
 </resources>
