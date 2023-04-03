@@ -11,4 +11,7 @@
     <string name="smile_face_icon">Smile face icon</string>
     <string name="no_pending_tasks">Congrats! No pending tasks.</string>
     <string name="back_arrow">Back arrow</string>
+    <string name="delete_icon">Delete icon</string>
+    <string name="update_icon">Update action</string>
+    <string name="drop_down_arrow_icon">Drop-Down Arrow Icon</string>
 </resources>
