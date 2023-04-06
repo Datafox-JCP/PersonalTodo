@@ -2,6 +2,7 @@ package mx.datafox.personaltodo.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,83 +27,91 @@ fun PriorityDropDown(
     priority: Priority,
     onPrioritySelected: (Priority) -> Unit
 ) {
-    var expended by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
-        targetValue = if (expended) 180f else 0f
+        targetValue = if (expanded) 180f else 0f
     )
 
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.background)
             .height(PRIORITY_DROP_DOWN_HEIGHT)
-            .clickable { expended = true }
+            .clickable { expanded = true }
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                color = MaterialTheme.colors.onSurface.copy(
+                    alpha = ContentAlpha.disabled
+                ),
+                shape = MaterialTheme.shapes.small
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Canvas(
             modifier = Modifier
                 .size(PRIORITY_INDICATOR_SIZE)
-                .weight(1f)
+                .weight(weight = 1f)
         ) {
             drawCircle(color = priority.color)
         }
-
         Text(
             modifier = Modifier
-                .weight(8f),
+                .weight(weight = 8f),
             text = priority.name,
             style = MaterialTheme.typography.subtitle2
         )
-
         IconButton(
             modifier = Modifier
                 .alpha(ContentAlpha.medium)
-                .rotate(angle)
-                .weight(1.5f),
-            onClick = { expended = true }
+                .rotate(degrees = angle)
+                .weight(weight = 1.5f),
+            onClick = { expanded = true }
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = stringResource(R.string.drop_down_arrow_icon)
+                contentDescription = stringResource(
+                    id = R.string.drop_down_arrow_icon
+                )
             )
         }
-        
         DropdownMenu(
             modifier = Modifier
-                .fillMaxWidth(),
-            expanded = expended,
-            onDismissRequest = { expended = false }
+                .fillMaxWidth(fraction = 0.94f),
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
         ) {
-            DropdownMenuItem(onClick = {
-                expended = false
-                onPrioritySelected(Priority.LOW)
-            }) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onPrioritySelected(Priority.LOW)
+                }
+            ) {
                 PriorityItem(priority = Priority.LOW)
             }
-
-            DropdownMenuItem(onClick = {
-                expended = false
-                onPrioritySelected(Priority.MEDIUM)
-            }) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onPrioritySelected(Priority.MEDIUM)
+                }
+            ) {
                 PriorityItem(priority = Priority.MEDIUM)
             }
-
-            DropdownMenuItem(onClick = {
-                expended = false
-                onPrioritySelected(Priority.HIGH)
-            }) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onPrioritySelected(Priority.HIGH)
+                }
+            ) {
                 PriorityItem(priority = Priority.HIGH)
             }
         }
     }
 }
 
+
 @Composable
 @Preview
-fun PriorityDropDownPreview() {
+private fun PriorityDropDownPreview() {
     PriorityDropDown(
         priority = Priority.LOW,
         onPrioritySelected = {}
