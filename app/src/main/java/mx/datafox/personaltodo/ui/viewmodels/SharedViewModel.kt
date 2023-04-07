@@ -33,6 +33,9 @@ class SharedViewModel @Inject constructor(
     val searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
     val searchTextState: MutableState<String> = mutableStateOf("")
 
+    private val _searchTasks = MutableStateFlow<RequestState<List<TodoTask>>>(RequestState.Idle)
+    val searchTasks: StateFlow<RequestState<List<TodoTask>>> = _searchTasks
+
     private val _allTasks = MutableStateFlow<RequestState<List<TodoTask>>>(RequestState.Idle)
     val allTasks: StateFlow<RequestState<List<TodoTask>>> = _allTasks
 
@@ -47,6 +50,21 @@ class SharedViewModel @Inject constructor(
         } catch (e: Exception) {
             _allTasks.value = RequestState.Error(e)
         }
+    }
+
+    fun searchDatabase(searchQuery: String) {
+        _searchTasks.value = RequestState.Loading
+        try {
+            viewModelScope.launch {
+                repository.searchDatabase(searchQuery = "%$searchQuery%")
+                    .collect { searchTasks ->
+                        _searchTasks.value = RequestState.Success(searchTasks)
+                    }
+            }
+        } catch (e: Exception) {
+            _searchTasks.value = RequestState.Error(e)
+        }
+        searchAppBarState.value = SearchAppBarState.TRIGGERED
     }
 
     private val _selectedTask: MutableStateFlow<TodoTask?> = MutableStateFlow(null)
@@ -68,6 +86,7 @@ class SharedViewModel @Inject constructor(
             )
             repository.addTask(todoTask)
         }
+        searchAppBarState.value = SearchAppBarState.CLOSED
     }
 
     private fun updateTask() {
@@ -94,6 +113,12 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    private fun deleteAllTasks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAllTasks()
+        }
+    }
+
     fun handleDatabaseActions(action: Action) {
         when (action) {
             Action.ADD -> {
@@ -106,10 +131,10 @@ class SharedViewModel @Inject constructor(
                 deleteTask()
             }
             Action.DELETE_ALL -> {
-
+                deleteAllTasks()
             }
             Action.UNDO -> {
-
+                addTask()
             }
             else -> {}
         }
