@@ -3,9 +3,9 @@ package mx.datafox.personaltodo.ui.screens.task
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import mx.datafox.personaltodo.R
 import mx.datafox.personaltodo.data.models.Priority
@@ -20,11 +20,15 @@ fun TaskScreen(
     sharedViewModel: SharedViewModel,
     navigateToListScreen: (Action) -> Unit
 ) {
-    val title: String by sharedViewModel.title
-    val description: String by sharedViewModel.description
-    val priority: Priority by sharedViewModel.priority
+    val title: String = sharedViewModel.title
+    val description: String = sharedViewModel.description
+    val priority: Priority = sharedViewModel.priority
 
     val context = LocalContext.current
+
+    BackHandler {
+        navigateToListScreen(Action.NO_ACTION)
+    }
 
     Scaffold(
         topBar = {
@@ -51,11 +55,11 @@ fun TaskScreen(
                 },
                 description = description,
                 onDescriptionChange = {
-                    sharedViewModel.description.value = it
+                    sharedViewModel.updateDescription(newDescription = it)
                 },
                 priority = priority,
                 onPrioritySelected = {
-                    sharedViewModel.priority.value = it
+                    sharedViewModel.updatePriority(newPriority = it)
                 }
             )
         }
@@ -69,3 +73,4 @@ fun displayToast(context: Context) {
         Toast.LENGTH_SHORT
     ).show()
 }
+

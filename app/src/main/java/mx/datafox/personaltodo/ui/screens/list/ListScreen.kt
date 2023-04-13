@@ -17,29 +17,32 @@ import mx.datafox.personaltodo.util.SearchAppBarState
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ListScreen(
+    action: Action,
     navigateToTaskScreen: (taskId: Int) -> Unit,
     sharedViewModel: SharedViewModel
 ) {
-    LaunchedEffect(key1 = true) {
-        sharedViewModel.getAllTasks()
+    LaunchedEffect(key1 = action) {
+        sharedViewModel.handleDatabaseActions(action = action)
     }
-
-    val action by sharedViewModel.action
 
     val allTasks by sharedViewModel.allTasks.collectAsState()
     val searchedTasks by sharedViewModel.searchTasks.collectAsState()
-    val searchAppBarState: SearchAppBarState by sharedViewModel.searchAppBarState
-    val searchTextState: String by sharedViewModel.searchTextState
+    val sortState by sharedViewModel.sortState.collectAsState()
+    val lowPriorityTasks by sharedViewModel.lowPriorityTasks.collectAsState()
+    val highPriorityTasks by sharedViewModel.highPriorityTasks.collectAsState()
+
+    val searchAppBarState: SearchAppBarState = sharedViewModel.searchAppBarState
+    val searchTextState: String = sharedViewModel.searchTextState
 
     val scaffoldState = rememberScaffoldState()
 
     DisplaySnackBar(
         scaffoldState = scaffoldState,
-        handleDatabaseActions = { sharedViewModel.handleDatabaseActions(action) },
+        onComplete = { sharedViewModel.updateAction(newAction = it) },
         onUndoClicked = {
-          sharedViewModel.action.value = it
+            sharedViewModel.updateAction(newAction = it)
         },
-        taskTitle = sharedViewModel.title.value,
+        taskTitle = sharedViewModel.title,
         action = action
     )
 
@@ -56,7 +59,15 @@ fun ListScreen(
                   ListContent(
                       allTasks = allTasks,
                       searchedTasks = searchedTasks,
+                      lowPriorityTasks = lowPriorityTasks,
+                      highPriorityTasks = highPriorityTasks,
+                      sortState = sortState,
                       searchAppBarState = searchAppBarState,
+                      onSwipeToDelete = { action, task ->
+                          sharedViewModel.updateAction(newAction = action)
+                          sharedViewModel.updateTaskFields(selectedTask = task)
+                          scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+                      },
                       navigateToTaskScreen = navigateToTaskScreen
                   )
         },
@@ -89,13 +100,11 @@ fun ListFab(
 @Composable
 fun DisplaySnackBar(
     scaffoldState: ScaffoldState,
-    handleDatabaseActions: () -> Unit,
+    onComplete: (Action) -> Unit,
     onUndoClicked: (Action) -> Unit,
     taskTitle: String,
     action: Action
 ) {
-    handleDatabaseActions()
-
     val scope =  rememberCoroutineScope()
     LaunchedEffect(key1 = action) {
         if (action != Action.NO_ACTION) {
@@ -110,6 +119,7 @@ fun DisplaySnackBar(
                     onUndoClicked = onUndoClicked
                 )
             }
+            onComplete(Action.NO_ACTION)
         }
     }
 }

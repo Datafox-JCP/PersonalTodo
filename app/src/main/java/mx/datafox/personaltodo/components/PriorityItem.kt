@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import mx.datafox.personaltodo.data.models.Priority
 import mx.datafox.personaltodo.ui.theme.LARGE_PADDING
 import mx.datafox.personaltodo.ui.theme.PRIORITY_INDICATOR_SIZE
@@ -32,7 +31,7 @@ fun PriorityItem(
             modifier = Modifier
                 .padding(start = LARGE_PADDING),
             text = priority.name,
-            style = Typography.subtitle1,
+            style = Typography.subtitle2,
             color = MaterialTheme.colors.onSurface
         )
     }
